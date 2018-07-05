@@ -10,20 +10,29 @@ import pandas as pd
 
 
 # Definition of the method
-def combine_csv(location, list):
-    data = pd.read_csv(location + list[0], encoding='latin-1')
-    if len(list) > 1:
-        for file in list[1:]:
-            complete_location = location + file
-            temp = pd.read_csv(complete_location)
-            data = data.append(temp, ignore_index=True)
-    return data
+def combine_csv(input_location, output_location, file_list, start_num=0):
+    if start_num == 0:
+        data = pd.read_csv(input_location + file_list[0], encoding='latin-1')
+        data.to_csv(output_location + "COMBINED_DATASET.csv", index=False)
+        print("{0} loaded. Dataframe initialized!".format(file_list[0]))
+        start_num += 1
+    if len(file_list) > 1:
+        try:
+            for file in file_list[start_num:]:
+                complete_location = input_location + file
+                temp = pd.read_csv(complete_location, encoding='latin-1')
+                # data = data.append(temp, ignore_index=True)
+                temp.to_csv(output_location + "COMBINED_DATASET.csv", mode="a", header=False, index=False)
+                print("{0} appended!".format(file))
+        except:
+            print("Error! The current file trying to append is {0},\n id={1}".format(file, file_list.index(file)))
 
 
 # Main Function
 if __name__ == '__main__':
     # Initializing
     file_location = 'C:/Users/sqian/OneDrive - WBG/Documents/07-05 - FAO Combination/'
+    output_location = '\\' + '\\Cgefile\\cge\\CGEDI\\M3 Modeling\\Individual Work Folders\\Interns\\Martin\\FAO_DATA_COMBINED\\'
     file_list = ["Emissions_Agriculture_Manure_left_on_pasture_E_All_Data_(Normalized).csv",
                  "Emissions_Agriculture_Manure_Management_E_All_Data_(Normalized).csv",
                  "Emissions_Agriculture_Rice_Cultivation_E_All_Data_(Normalized).csv",
@@ -85,5 +94,6 @@ if __name__ == '__main__':
                  "Emissions_Agriculture_Enteric_Fermentation_E_All_Data_(Normalized).csv",
                  "Emissions_Agriculture_Manure_applied_to_soils_E_All_Data_(Normalized).csv"]
 
-    combined_data = combine_csv(file_location, file_list)
-    combined_data.to_csv(file_location + "combined_data.csv", index=False)
+    combine_csv(file_location, output_location, file_list)
+    # combined_data.to_csv(file_location + "combined_data.csv", index=False)
+    print("Done!")
